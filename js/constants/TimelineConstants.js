@@ -13,10 +13,7 @@ var keyMirror = require('keymirror');
 
 module.exports = keyMirror({
   TIMELINE_CREATE: null,
-  TIMELINE_COMPLETE: null,
+  TIMELINE_INIT: null,
   TIMELINE_DESTROY: null,
-  TIMELINE_DESTROY_COMPLETED: null,
-  TIMELINE_CREATE_TIMELINE: null,
-  TIMELINE_UNDO_COMPLETE: null,
-  TIMELINE_UPDATE_TEXT: null
+  TIMELINE_CREATE_TIMELINE: null
 });

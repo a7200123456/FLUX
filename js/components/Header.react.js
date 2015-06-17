@@ -7,9 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-//var React = require('react');
+var React = require('react');
 var TimelineActions = require('../actions/TimelineActions');
-//var TimelineTextInput = require('./TimelineTextInput.react');
+var TimelineTextInput = require('./TimelineTextInput.react');
 
 var Header = React.createClass({
 
@@ -22,14 +22,12 @@ var Header = React.createClass({
       return;
     };
 	
-	TimelineActions.create(date,text);
+	TimelineActions.create(this.props.project_name,date,text);
     React.findDOMNode(this.refs.date).value = '';
     React.findDOMNode(this.refs.text).value = '';
     return;
   },
-  /**
-   * @return {object}
-   */
+  
   render: function() {
     
 		//console.log('this.refs.date: '+date);
@@ -43,18 +41,7 @@ var Header = React.createClass({
 		</form>
       </header>
     );
-  }/**,
-
-  
-   * Event handler called within TimelineTextInput.
-   * Defining this here allows TimelineTextInput to be used in multiple places
-   * in different ways.
-   * @param {string} text
-   
-  _onSave: function(text) {
-      TimelineActions.create(date,text);
   }
-*/
 });
 
 module.exports = Header;

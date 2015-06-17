@@ -5,61 +5,74 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
- */
+*/
 
-//var React = require('react');
-var Router = require('react-router');
+var React = require('react');
 var TimelineApp = require('./components/TimelineApp.react');
 var TimelineStore = require('./stores/TimelineStore');
-var {
-  Route,
-  DefaultRoute,
-  NotFoundRoute,
-  RouteHandler,
-  Link
-} = Router;
+var TimelineActions = require('./actions/TimelineActions');
+var Router = require('react-router');
+var Route = Router.Route;
+var DefaultRoute = Router.DefaultRoute; 
+var	RouteHandler = Router.RouteHandler;
+var NotFoundRoute = Router.NotFoundRoute;
+var Link = Router.Link;
 
+ 
 var App = React.createClass({
   getInitialState: function () {
     return {
-      contacts: TimelineStore.getContacts(),
+      timelines: TimelineStore.getAll(),
       loading: true
     };
   },
-
+  
   componentWillMount: function () {
-    TimelineStore.init();
+    TimelineActions.init();
   },
 
   componentDidMount: function () {
-    TimelineStore.addChangeListener(this.updateContacts);
+    TimelineStore.addChangeListener(this.updateTimelines);
   },
 
   componentWillUnmount: function () {
-    TimelineStore.removeChangeListener(this.updateContacts);
+    TimelineStore.removeChangeListener(this.updateTimelines);
   },
 
-  updateContacts: function () {
+  updateTimelines: function () {
     if (!this.isMounted())
       return;
 
     this.setState({
-      contacts: TimelineStore.getContacts(),
+      timelines: TimelineStore.getAll(),
       loading: false
     });
   },
 
   render: function () {
-    var contacts = this.state.contacts.map(function (contact) {
-      return <li key={contact.id}><Link to="contact" params={contact}>{contact.first}</Link></li>;
-    });
+	
+	var timelines_p =[];
+	for (var project_name in this.state.timelines) {
+      timelines_p.push(<li key={this.state.timelines[project_name]}>
+						<Link to="timeline" params={{id : this.state.timelines[project_name]}} >
+							{this.state.timelines[project_name]}
+						</Link>
+					</li>);
+    }
+    //var timelines = this.state.timelines.map(function (project) {
+    //  return <li key={project_name}>
+	//			<Link to="timeline" params={project_name} >
+	//				{project_name}
+	//			</Link>
+	//		  </li>;
+    //});
     return (
       <div className="App">
-        <div className="ContactList">
-          <Link to="new">New Contact</Link>
-          <ul>
-            {contacts}
-          </ul>
+		<div className="TimelineList">
+          <Link to="new">New Timeline</Link>
+			<ul>
+			{timelines_p}
+			</ul>
           <Link to="/nothing-here">Invalid Link (not found)</Link>
         </div>
         <div className="Content">
@@ -70,91 +83,31 @@ var App = React.createClass({
   }
 });
 
+        
 var Index = React.createClass({
   render: function () {
-    return <h1>Address Book</h1>;
+    return <h1>Timeline Project</h1>;
   }
 });
 
-var Contact = React.createClass({
 
+var NewTimeline = React.createClass({
   contextTypes: {
     router: React.PropTypes.func
   },
 
-  getStateFromStore: function () {
-    var id = this.context.router.getCurrentParams().id;
-    return {
-      contact: TimelineStore.getContact(id)
-    };
-  },
-
-  getInitialState: function () {
-    return this.getStateFromStore();
-  },
-
-  componentDidMount: function () {
-    TimelineStore.addChangeListener(this.updateContact);
-  },
-
-  componentWillUnmount: function () {
-    TimelineStore.removeChangeListener(this.updateContact);
-  },
-
-  componentWillReceiveProps: function () {
-    this.setState(this.getStateFromStore());
-  },
-
-  updateContact: function () {
-    if (!this.isMounted())
-      return;
-
-    this.setState(this.getStateFromStore());
-  },
-
-  destroy: function () {
-    var { router } = this.context;
-    var id = router.getCurrentParams().id;
-    TimelineStore.removeContact(id);
-    router.transitionTo('/');
-  },
-
-  render: function () {
-    var contact = this.state.contact || {};
-    var name = contact.first + ' ' + contact.last;
-    var avatar = contact.avatar || 'http://placecage.com/50/50';
-    return (
-      <div className="Contact">
-        <img height="50" src={avatar} key={avatar}/>
-        <h3>{name}</h3>
-        <button onClick={this.destroy}>Delete</button>
-      </div>
-    );
-  }
-});
-
-var NewContact = React.createClass({
-
-  contextTypes: {
-    router: React.PropTypes.func
-  },
-
-  createContact: function (event) {
+  createTimeline: function (event) {
     event.preventDefault();
-    TimelineStore.addContact({
-      first: this.refs.first.getDOMNode().value,
-      last: this.refs.last.getDOMNode().value
-    }, function (contact) {
-      this.context.router.transitionTo('contact', { id: contact.id });
-    }.bind(this));
+    TimelineActions.create_timeline(
+      this.refs.first.getDOMNode().value
+    );
   },
 
   render: function () {
     return (
-      <form onSubmit={this.createContact}>
+      <form onSubmit={this.createTimeline}>
         <p>
-          <input type="text" ref="first" placeholder="First name"/>
-          <input type="text" ref="last" placeholder="Last name"/>
+          <input type="text" ref="first" placeholder="project name"/>
         </p>
         <p>
           <button type="submit">Save</button> <Link to="/">Cancel</Link>
@@ -173,13 +126,12 @@ var NotFound = React.createClass({
 var routes = (
   <Route handler={App}>
     <DefaultRoute handler={Index}/>
-    <Route name="new" path="contact/new" handler={NewContact}/>
-    <Route name="contact" path="contact/:id" handler={Contact}/>
+    <Route name="new" path="timeline/new" handler={NewTimeline}/>
+    <Route name="timeline" path="timeline/:id" handler={TimelineApp}/>
     <NotFoundRoute handler={NotFound}/>
   </Route>
 );
 
 Router.run(routes, function (Handler) {
-	//React.render(<TimelineApp />,document.getElementById('timelineapp'));
 	React.render(<Handler/>, document.getElementById('timelineapp'));
 });
