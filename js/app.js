@@ -48,10 +48,6 @@ var App = React.createClass({
       loading: false
     });
   },
-  _getserver_timeline: function(p_id) {
-	//console.log("!!getserver_timeline p_id = " + p_id);
-	TimelineActions.timeline_init(p_id);
-  },
   render: function () {
 	
 	var timelines_p =[];
@@ -60,7 +56,9 @@ var App = React.createClass({
 	  timeline_id = timeline_id+1;
       timelines_p.push(<li key={this.state.timelines[id].p_id}>
 							    <Link to="timeline" params={{id : this.state.timelines[id].p_id}} >
-								    {this.state.timelines[id].p_name}
+									<button onClick={this._getserver_timeline.bind(null,this.state.timelines[id].p_id)}> 
+										{this.state.timelines[id].p_name}
+									</button>	
 							    </Link>
 					   </li>);
     }
@@ -76,12 +74,19 @@ var App = React.createClass({
         <div className="Content">
           <RouteHandler/>
         </div>
-		<button onclick={this._getserver_timeline(1)}>
-				fuck_you
-			</button>
+		
       </div>
     );
-  }
+  },
+  
+  _getserver_timeline: function(p_id) {
+	console.log("!!getserver_timeline p_id = " + p_id);
+	TimelineActions.timeline_init(p_id);
+  },
+  
+		//<button onClick={this._getserver_timeline(1)}>
+		//		fuck_you
+		//	</button>
 });
 
         

@@ -27,6 +27,7 @@ var TimelineItem = React.createClass({
   },
 
   _onDestroyClick: function() {
+	  console.log("_onDestroyClick");
     TimelineActions.destroy(this.props.date);
   }
 

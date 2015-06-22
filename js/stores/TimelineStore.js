@@ -40,13 +40,14 @@ function getserver_timeline(p_id) {
 			var date_dc   = data[i].description;
 			_timelines[p_id][d_id] = [];
 			_timelines[p_id][d_id].push({d_id,date,date_dc});
-			console.log("d_id : "+d_id);
+			//console.log("d_id : "+d_id);
+		
 			$.get('http://140.112.175.38:3000/record_date', { id: d_id })
 			.done(function(data_r){
 				//var data_r = JSON.parse(data_r);
 				//console.log(data_r.length);
 				//console.log(data_r);
-				console.log(d_id, data_r[0].record_date_id);
+				//console.log(d_id, data_r[0].record_date_id);
 				for (var j = 0; j < data_r.length; j++) {
 					if (data_r[j].source == "flickr") {
 						var r_id = data_r[j].id;
@@ -54,7 +55,7 @@ function getserver_timeline(p_id) {
 						var source = data_r[j].source;
 						var info = data_r[j].photoset_id;
 						
-						_timelines[p_id][d_id][r_id]={r_id,r_name, source, info};
+						_timelines[p_id][data_r[0].record_date_id][r_id]={r_id,r_name, source, info};
 						//_timelines[project][data_r[i].date].push({text,source,info});
 					}
 					else {//data_r[j].source == "dropbox"
@@ -62,15 +63,15 @@ function getserver_timeline(p_id) {
 						var r_name = data_r[j].name;
 						var source = data_r[j].source;
 						var info = data_r[j].path;
-
-						_timelines[p_id][d_id][r_id]={r_id,r_name, source, info};
+	
+						_timelines[p_id][data_r[0].record_date_id][r_id]={r_id,r_name, source, info};
 						//create(project, data_record[i].date, data_record[i].records[j].name, data_record[i].records[j].source, 0);
 					}
 				}
+				console.log("_getserver_timeline p_id : " + p_id +" d_id : "+ d_id);
+				TimelineStore.emitChange();
 			})
 		}
-		console.log("action: getserver_timeline  project_name : " + p_id);
-		//TimelineStore.emitChange();
 	})
 }
 function create(p_id,d_id, date, date_dc,r_id, r_name, source, info) {
