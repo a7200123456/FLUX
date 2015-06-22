@@ -75,19 +75,58 @@ function getserver_timeline(p_id) {
 	})
 }
 function create(p_id,d_id, date, date_dc,r_id, r_name, source, info) {
-   if (_timelines[p_id][d_id])
-	  _timelines[p_id][d_id][r_id]={r_id,r_name, source, info};
-  else{
-		_timelines[p_id][d_id] = [];
-		_timelines[p_id][d_id].push({d_id,date,date_dc});
-		_timelines[p_id][d_id][r_id]={r_id,r_name, source, info};
-	  }
+   // get project record dates
+    if (_timelines[p_id][d_id]){
+		$.post('http://140.112.175.38:3000/dropbox_record/create', { date_id: d_id, name: r_name, description: "", path: "" })
+            .done(function(data_r){
+				var r_id	= data_r.id;
+				var r_name	= data_r.name; 
+				var source	= data_r.source;
+				var	info	= data_r.path;
+				_timelines[p_id][d_id][data_r.id]={r_id,r_name, source, info}; 
+				TimelineStore.emitChange();
+            })
+	}
+    else{
+		$.post('http://140.112.175.38:3000/record_date/create', { project_id: p_id, date: date, description: date_dc })
+           .done(function(data){
+			var d_id = data.id;
+            _timelines[data.project_id][data.id] = [];
+			_timelines[data.project_id][data.id].push({d_id,date,date_dc}); 
+			//if(source == "dropbox"){
+			$.post('http://140.112.175.38:3000/dropbox_record/create', { date_id: data.id, name: r_name, description: "", path: "" })
+            .done(function(data_r){
+				var r_id	= data_r.id;
+				var r_name	= data_r.name; 
+				var source	= data_r.source;
+				var	info	= data_r.path;
+				_timelines[data.project_id][data.id][data_r.id]={r_id,r_name, source, info};
+				TimelineStore.emitChange();
+            }) 
+			//}else{//source == flicker}
+        })
+	  
+	}
+   // create a record date
+    //if (_timelines[p_id][d_id])
+	//  _timelines[p_id][d_id][r_id]={r_id,r_name, source, info};
+	//else{
+	//	_timelines[p_id][d_id] = [];
+	//	_timelines[p_id][d_id].push({d_id,date,date_dc});
+	//	_timelines[p_id][d_id][r_id]={r_id,r_name, source, info};
+	//  }
 }
 function create_timeline(p_id,p_name,p_dc) {
 	_timelines[p_id] = [];
 	_timelines[p_id].push({p_id,p_name,p_dc});
 }
-
+function create_timeline_set_server(p_id,p_name,p_dc){
+	$.post('http://140.112.175.38:3000/project/create', { "name": p_name, "description": p_dc })
+            .done(function(data){
+                create_timeline(data.id,data.name,data.description);
+				TimelineStore.emitChange();
+            })
+}
 function destroy(id,date) {
   delete _timelines[id][date];
 }
@@ -148,14 +187,13 @@ AppDispatcher.register(function(action) {
       if (text !== '') {
         //create(action.project, action.date, action.text);
 		create(action.p_id,action.d_id, action.date, action.date_dc,action.r_id, action.r_name, action.source, action.info)
-        TimelineStore.emitChange();
       }
       break;
 
     case TimelineConstants.TIMELINE_CREATE_TIMELINE:
       //create_timeline(action.id,action.name,action.description);
-	  create_timeline(action.p_id,action.p_name,action.p_dc);
-      TimelineStore.emitChange();
+	  create_timeline_set_server(action.p_id,action.p_name,action.p_dc);
+      
       break;
 
     case TimelineConstants.TIMELINE_DESTROY:
