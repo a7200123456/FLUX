@@ -22,24 +22,33 @@ var TimelineActions = {
       actionType: TimelineConstants.TIMELINE_INIT,
     });
   },
-  timeline_init: function(project) {
+  timeline_init: function(p_id) {
+	  
+	//console.log("action timeline_init p_id = " + p_id);
     AppDispatcher.dispatch({
       actionType: TimelineConstants.TIMELINE_TIMELINE_INIT,
-	  project:project
+	  p_id: p_id,
     });
   },
-  create: function(project,date,text) {
+  create: function(p_id,d_id, date, date_dc,r_id, r_name, source, info) {
     AppDispatcher.dispatch({
       actionType: TimelineConstants.TIMELINE_CREATE,
-      project:project,
-	  text: text,
-	  date: date
+      p_id:p_id,
+	  d_id:d_id,
+	  date:date,
+	  date_dc:date_dc,
+	  r_id:r_id,
+	  r_name:r_name,
+	  source:source,
+	  info:info
     });
   },
-  create_timeline: function(project) {
+  create_timeline: function(p_id,p_name,p_dc) {
     AppDispatcher.dispatch({
       actionType: TimelineConstants.TIMELINE_CREATE_TIMELINE,
-      project:project
+	  p_id: p_id,
+	  p_name: p_name,
+	  p_dc: p_dc
     });
   },
 

@@ -48,30 +48,26 @@ var App = React.createClass({
       loading: false
     });
   },
-//<button onclick={this._getserver_timeline(this.state.timelines[project_name])}> </button>
-  _getserver_timeline: function(project) {
-	
-	TimelineActions.timeline_init(project);
+  _getserver_timeline: function(p_id) {
+	//console.log("!!getserver_timeline p_id = " + p_id);
+	TimelineActions.timeline_init(p_id);
   },
   render: function () {
 	
 	var timelines_p =[];
-	for (var project_name in this.state.timelines) {
-      timelines_p.push(<li key={this.state.timelines[project_name]}>
-							    <Link to="timeline" params={{id : this.state.timelines[project_name]}} >
-							
-								    {this.state.timelines[project_name]}
-							
+	var timeline_id = 1;
+	for (var id in this.state.timelines) {
+	  timeline_id = timeline_id+1;
+      timelines_p.push(<li key={this.state.timelines[id].p_id}>
+							    <Link to="timeline" params={{id : this.state.timelines[id].p_id}} >
+								    {this.state.timelines[id].p_name}
 							    </Link>
 					   </li>);
     }
     return (
       <div className="App">
 		<div className="TimelineList">
-          <Link to="new">New Timeline</Link>
-			<button onclick={this._getserver_timeline(1)}>
-				fuck_you
-			</button>
+          <Link to="new" params={{id: timeline_id}}>New Timeline</Link>
 			<ul>
 			{timelines_p}
 			</ul>
@@ -80,6 +76,9 @@ var App = React.createClass({
         <div className="Content">
           <RouteHandler/>
         </div>
+		<button onclick={this._getserver_timeline(1)}>
+				fuck_you
+			</button>
       </div>
     );
   }
@@ -92,7 +91,6 @@ var Index = React.createClass({
   }
 });
 
-
 var NewTimeline = React.createClass({
   contextTypes: {
     router: React.PropTypes.func
@@ -100,15 +98,23 @@ var NewTimeline = React.createClass({
 
   createTimeline: function (event) {
     event.preventDefault();
-    TimelineActions.create_timeline(
-      this.refs.first.getDOMNode().value
-    );
+	
+	var p_id = this.context.router.getCurrentParams().id;
+	//console.log(this.context.router.getCurrentParams())
+    var p_name = this.refs.first.getDOMNode().value;
+	var p_dc="";
+    TimelineActions.create_timeline(p_id,p_name,p_dc);
+
   },
 
   render: function () {
     return (
+	
       <form onSubmit={this.createTimeline}>
-        <p>
+        <h2>PROJECT ID: 
+			<div>{this.context.router.getCurrentParams().id}</div>
+		</h2>
+		<p>
           <input type="text" ref="first" placeholder="project name"/>
         </p>
         <p>
@@ -128,7 +134,7 @@ var NotFound = React.createClass({
 var routes = (
   <Route handler={App}>
     <DefaultRoute handler={Index}/>
-    <Route name="new" path="timeline/new" handler={NewTimeline}/>
+    <Route name="new" path="timeline/new/:id" handler={NewTimeline}/>
     <Route name="timeline" path="timeline/:id" handler={TimelineApp}/>
     <NotFoundRoute handler={NotFound}/>
   </Route>

@@ -13,17 +13,46 @@ var TimelineActions = require('../actions/TimelineActions');
 var Header = React.createClass({
 
 	_onSave: function(e) {
-	
-    e.preventDefault();
-    var date = React.findDOMNode(this.refs.date).value.trim();
-    var text = React.findDOMNode(this.refs.text).value.trim();
-    if (!text || !date) {
-      return;
-    };
-	
-	TimelineActions.create(this.props.project_name,date,text);
-    React.findDOMNode(this.refs.date).value = '';
-    React.findDOMNode(this.refs.text).value = '';
+		e.preventDefault();
+		var allTimelines = this.props.allTimelines;
+		var new_d_id = 0;
+		var new_r_id = 0;
+		var match = 0;
+		var date = React.findDOMNode(this.refs.date).value.trim();
+		var r_name = React.findDOMNode(this.refs.text).value.trim();
+		var source = "";
+		var info = "";
+		if (!r_name || !date) {
+			return;
+		};
+		//console.log(allTimelines);
+		for (var d_id in allTimelines){
+			//console.log(d_id);
+			if(d_id == 0){
+				new_d_id = 1;
+				new_r_id = 1;
+				match = 0;
+			}
+			else if(date == allTimelines[d_id][0].date && match == 0){
+				//console.log("match: "+allTimelines[d_id][0].date);
+				new_d_id = d_id;
+				new_r_id = 0;
+				for (var r_id in allTimelines[d_id]){
+					new_r_id = new_r_id+1;
+				}
+				match = 1;
+			}
+			else if(match == 0){
+				//console.log("not match: "+allTimelines[d_id][0].date);
+				new_d_id = new_d_id + 1;
+				new_r_id = 1;
+			}		
+		}
+		//console.log(new_d_id,new_r_id)
+		TimelineActions.create(this.props.p_id,new_d_id, date, "",new_r_id, r_name, source, info)
+		//TimelineActions.create(this.props.p_id,date,text);
+		React.findDOMNode(this.refs.date).value = '';
+		React.findDOMNode(this.refs.text).value = '';
     return;
   },
   

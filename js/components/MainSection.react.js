@@ -24,9 +24,9 @@ var MainSection = React.createClass({
     var allTimelines = this.props.allTimelines;
     var timelines = [];
 
-    for (var d in allTimelines) {
-		if(d != 0)
-		timelines.push(<TimelineItem date={d} timeline={allTimelines[d]} />);
+    for (var d_id in allTimelines) {
+		if(d_id != 0)
+		timelines.push(<TimelineItem date={allTimelines[d_id][0].date} timeline={allTimelines[d_id]} />);
     }
 
     return (

@@ -52,10 +52,10 @@ var Timeline_text = React.createClass({
 	
   render: function() {
 	var timelinetext =[];
-	for (var d in this.props.text) {
+	for (var r_id in this.props.text) {
       timelinetext.push(
 		<div >
-			<div  className="timelinetext_text" onclick={this.showdetail}>{this.props.text[d]}</div >
+			<div  className="timelinetext_text" onclick={this.showdetail}>{this.props.text[r_id].r_name}</div >
 		</div>
 		)
     }
