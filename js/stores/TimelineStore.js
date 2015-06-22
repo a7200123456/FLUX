@@ -132,7 +132,11 @@ function destroy(id,date) {
 }
 
 var TimelineStore = assign({}, EventEmitter.prototype, {
-
+  
+  get_p_name: function(p_id){
+  	return _timelines[p_id][0].p_name;
+  },
+  
   getAll: function() {
 	var array = [];
 

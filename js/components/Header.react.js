@@ -19,7 +19,7 @@ var Header = React.createClass({
 		var new_r_id = 0;
 		var match = 0;
 		var date = React.findDOMNode(this.refs.date).value.trim();
-		var r_name = React.findDOMNode(this.refs.text).value.trim();
+		var r_name  = $('#file')[0].files[0].name;
 		var source = "";
 		var info = "";
 		if (!r_name || !date) {
@@ -48,6 +48,8 @@ var Header = React.createClass({
 				new_r_id = 1;
 			}		
 		}
+		
+		this.uploadfile(r_name,date);
 		//console.log(new_d_id,new_r_id)
 		TimelineActions.create(this.props.p_id,new_d_id, date, "",new_r_id, r_name, source, info)
 		//TimelineActions.create(this.props.p_id,date,text);
@@ -56,16 +58,46 @@ var Header = React.createClass({
     return;
   },
   
+  
+  uploadfile : function(r_name,date){
+  	   var reader = new FileReader({'blob': true});
+       reader.readAsArrayBuffer($('#file')[0].files[0]);
+
+       reader.onload = function(){
+       $.ajax({
+            type: "PUT",
+            url: "https://api-content.dropbox.com/1/files_put/auto/"+ date + "/" + r_name + "?access_token=" + "cylJKvSb2aAAAAAAAAAACiaNzW-K63KK3UYUh_4XQungz1abmzBWpthPn-f0emue",
+            data: reader.result,
+            headers: { 'Content-Type': 'text/plain'},
+            dataType: "json",
+            contentType: false,
+            processData: false,
+        }).done(function(res) {
+            uploadpath = res.path;
+            alert("success");
+            })
+         .fail(function(err){
+            console.log(err);
+            })
+        }
+	},
+	
   render: function() {
+  	var idname= this.props.p_id;
+    var prjname =  this.props.p_name;
     
 		//console.log('this.refs.date: '+date);
 	return (
       <header id="header">
         <h1>timelines</h1>
+        <h3 className="prjname" >♠   {prjname}</h3>
         <form className="timelineHeader" onSubmit={this._onSave}>
 			<input type="text" placeholder="date" ref="date" />
-			<input type="text" placeholder="file_name" ref="text" />
-			<input type="submit" value="Post" />
+			<p></p>
+    		<input type="file" placeholder="file_name" ref="text" id="file"/>
+    		<p></p>
+    		<input type="submit" className="btndefault" value="Upload A File"/>
+      		<p></p>
 		</form>
       </header>
     );

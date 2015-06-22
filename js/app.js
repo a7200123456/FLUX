@@ -48,6 +48,11 @@ var App = React.createClass({
       loading: false
     });
   },
+  
+  login_fn : function() {
+  window.open("https://www.dropbox.com/1/oauth2/authorize?response_type=token&client_id=rj3c8z8y8m2vbou&redirect_uri=http://localhost:8000","Ratting","width=550,height=500,toolbox=true");
+  },
+  
   render: function () {
 	
 	var timelines_p =[];
@@ -69,6 +74,7 @@ var App = React.createClass({
 			<ul>
 			{timelines_p}
 			</ul>
+			<button className="btndropbox" onClick={this.login_fn}>Dropbox Login</button>
           <Link to="/nothing-here">Invalid Link (not found)</Link>
         </div>
         <div className="Content">

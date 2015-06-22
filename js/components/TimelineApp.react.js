@@ -61,12 +61,14 @@ var TimelineApp = React.createClass({
 	//console.log("timeline_app componentWillReceiveProps");
   },
   render: function() {
+	var prj_name = TimelineStore.get_p_name(this.context.router.getCurrentParams().id);
 	//console.log(this.state.allTimelines);  
   	return (
       <div>
         <Header 
 		 p_id={this.context.router.getCurrentParams().id}
 		 allTimelines={this.state.allTimelines}
+		 p_name={prj_name}
 		/>
         <MainSection
           allTimelines={this.state.allTimelines}
