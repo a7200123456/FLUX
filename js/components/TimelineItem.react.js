@@ -10,7 +10,6 @@
 var React = require('react');
 //var ReactPropTypes = React.PropTypes;
 var TimelineActions = require('../actions/TimelineActions');
-var TimelineTextInput = require('./TimelineTextInput.react');
  
 var cx = require('react/lib/cx');
 
@@ -47,13 +46,16 @@ var Timeline_date = React.createClass({
   }
 });
 var Timeline_text = React.createClass({
+	showdetail: function() {
+		console.log("showdetail");
+	},
+	
   render: function() {
 	var timelinetext =[];
 	for (var d in this.props.text) {
       timelinetext.push(
 		<div >
-			<img src="Bird_lonely.jpg" height="50" width="50" />
-			<div  className="timelinetext_text">{this.props.text[d]}</div >
+			<div  className="timelinetext_text" onclick={this.showdetail}>{this.props.text[d]}</div >
 		</div>
 		)
     }

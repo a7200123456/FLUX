@@ -16,15 +16,58 @@ var assign = require('object-assign');
 
 var CHANGE_EVENT = 'change';
 
-
+var _changeListeners = [];
 var _timelines = [];
 
-function create(project,date, text) {
+function getserver() {
+	$.getJSON('http://140.112.175.38:3000/projects',function(data){
+		for (var i = 0; i < data.length; i++) {
+			create_timeline(data[i].name);
+			//getserver_timeline(data[i].name);
+		}
+		TimelineStore.emitChange();
+	})
+}
+function getserver_timeline(project) {
+	//var url = 'http://140.112.175.39:4567/project/' + project;
+	$.get('http://140.112.175.38:3000/project', { id: 1 })
+	.done(function(data){
+		var raw_json = JSON.parse(data);
+		for (var i = 0; i < raw_json.length; i++) {
+			_timelines[project][raw_json[i].date] = [];
+				//console.log(raw_json[i].records[j].source);
+				//console.log(raw_json[i].records[j].photoset_id);
+		}
+		$.get('http://140.112.175.38:3000/record_date', { id: 1 })
+			.done(function(data_r){
+			var raw_json_r = JSON.parse(data_r);
+			for (var j = 0; j < raw_json_r[i].records.length; j++) {
+				if (raw_json_r[i].records[j].source == "flickr") {
+					var text = raw_json_r[i].records[j].name;
+					var source = raw_json_r[i].records[j].source;
+					var info = raw_json_r[i].records[j].photoset_id;
+					_timelines[project][raw_json_r[i].date].push({text,source,info});
+				}
+				else {
+					var text = raw_json_r[i].records[j].name;
+					var source = raw_json_r[i].records[j].source;
+					var info = 0;
+					_timelines[project][raw_json_r[i].date].push({text,source,info});
+					//create(project, raw_json_record[i].date, raw_json_record[i].records[j].name, raw_json_record[i].records[j].source, 0);
+				}
+			}
+			
+			console.log("action: getserver_timeline  project_name : " + project);
+			TimelineStore.emitChange();
+			})
+	})
+}
+function create(project,date, text, source, info) {
    if (_timelines[project][date])
-	  _timelines[project][date].push(text);
+	  _timelines[project][date].push({text,source,info});
   else{
 	  _timelines[project][date] = [];
-	  _timelines[project][date].push(text);
+	  _timelines[project][date].push({text,source,info});
 	  }
 }
 function create_timeline(project) {
@@ -52,15 +95,22 @@ var TimelineStore = assign({}, EventEmitter.prototype, {
   },
 
   emitChange: function() {
-    this.emit(CHANGE_EVENT);
+    _changeListeners.forEach(function (callback) {
+      callback(); 
+    });
+	//this.emit(CHANGE_EVENT);
   },
 
   addChangeListener: function(callback) {
-    this.on(CHANGE_EVENT, callback);
+    _changeListeners.push(callback);
+	//this.on(CHANGE_EVENT, callback);
   },
  
   removeChangeListener: function(callback) {
-    this.removeListener(CHANGE_EVENT, callback);
+    _changeListeners = _changeListeners.filter(function (l) {
+      return callback !== l;
+    });
+	//this.removeListener(CHANGE_EVENT, callback);
   }
 });
 
@@ -70,9 +120,15 @@ AppDispatcher.register(function(action) {
 
   switch(action.actionType) {
 	case TimelineConstants.TIMELINE_INIT:
-        TimelineStore.emitChange();
+        getserver();
+		//TimelineStore.emitChange();
       break;
-
+	
+	case TimelineConstants.TIMELINE_TIMELINE_INIT:
+        getserver_timeline(action.project);
+		//TimelineStore.emitChange();
+      break;
+	  
     case TimelineConstants.TIMELINE_CREATE:
       if (text !== '') {
         create(action.project, action.date, action.text);

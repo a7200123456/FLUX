@@ -12,11 +12,12 @@
  * the TimelineStore and passes the new data to its children.
 
  */
-var Footer = require('./Footer.react');
+
 var Header = require('./Header.react');
 var MainSection = require('./MainSection.react');
 var React = require('react');
 var TimelineStore = require('../stores/TimelineStore');
+var TimelineActions = require('../actions/TimelineActions');
 
 var TimelineApp = React.createClass({
 
@@ -26,7 +27,9 @@ var TimelineApp = React.createClass({
   
   getTimelineState:function () {
 	var id = this.context.router.getCurrentParams().id;
-	 console.log("this is id : " + id);
+	 //console.log("this is id : " + id);
+	 
+	//console.log("!!!!!!!!!!!!!!!set_state!!!!!!!!!!!!!!!!");
 	return {
 		allTimelines: TimelineStore.getTimeline(id)
 	};
@@ -36,20 +39,30 @@ var TimelineApp = React.createClass({
     return this.getTimelineState();
   },
 
+  componentWillMount: function () {
+	//var id = this.context.router.getCurrentParams().id;
+    //TimelineActions.timeline_init(id);
+	//console.log("timeline_app componentWillMount");
+  },
+  
   componentDidMount: function() {
     TimelineStore.addChangeListener(this._onChange);
+	//console.log("timeline_app componentDidMount");
   },
 
   componentWillUnmount: function() {
     TimelineStore.removeChangeListener(this._onChange);
+	//console.log("timeline_app componentWillUnmount");
   },
   
   componentWillReceiveProps: function () {
+    //TimelineActions.timeline_init(project_name);
     this.setState(this.getTimelineState());
+	//console.log("timeline_app componentWillReceiveProps");
   },
-
   render: function() {
-	  
+	
+	//console.log("rerender!!!!!!!!!!!");  
   	return (
       <div>
         <Header 
@@ -65,7 +78,7 @@ var TimelineApp = React.createClass({
 
   _onChange: function() {
     this.setState(this.getTimelineState());
-	console.log(this.state.allTimelines);
+	//console.log("!!!!!!!!!!!!!!!_onChange!!!!!!!!!!!!!!!!");
   }
 
 });

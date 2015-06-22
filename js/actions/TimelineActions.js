@@ -17,9 +17,15 @@ var TimelineActions = {
   /**
    * @param  {string} text
    */
-   init: function() {
+  init: function() {
     AppDispatcher.dispatch({
       actionType: TimelineConstants.TIMELINE_INIT,
+    });
+  },
+  timeline_init: function(project) {
+    AppDispatcher.dispatch({
+      actionType: TimelineConstants.TIMELINE_TIMELINE_INIT,
+	  project:project
     });
   },
   create: function(project,date,text) {

@@ -48,28 +48,30 @@ var App = React.createClass({
       loading: false
     });
   },
-
+//<button onclick={this._getserver_timeline(this.state.timelines[project_name])}> </button>
+  _getserver_timeline: function(project) {
+	
+	TimelineActions.timeline_init(project);
+  },
   render: function () {
 	
 	var timelines_p =[];
 	for (var project_name in this.state.timelines) {
       timelines_p.push(<li key={this.state.timelines[project_name]}>
-						<Link to="timeline" params={{id : this.state.timelines[project_name]}} >
-							{this.state.timelines[project_name]}
-						</Link>
-					</li>);
+							    <Link to="timeline" params={{id : this.state.timelines[project_name]}} >
+							
+								    {this.state.timelines[project_name]}
+							
+							    </Link>
+					   </li>);
     }
-    //var timelines = this.state.timelines.map(function (project) {
-    //  return <li key={project_name}>
-	//			<Link to="timeline" params={project_name} >
-	//				{project_name}
-	//			</Link>
-	//		  </li>;
-    //});
     return (
       <div className="App">
 		<div className="TimelineList">
           <Link to="new">New Timeline</Link>
+			<button onclick={this._getserver_timeline(1)}>
+				fuck_you
+			</button>
 			<ul>
 			{timelines_p}
 			</ul>

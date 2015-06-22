@@ -9,7 +9,6 @@
 
 var React = require('react');
 var TimelineActions = require('../actions/TimelineActions');
-var TimelineTextInput = require('./TimelineTextInput.react');
 
 var Header = React.createClass({
 
