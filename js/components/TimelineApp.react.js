@@ -71,6 +71,7 @@ var TimelineApp = React.createClass({
 		 p_name={prj_name}
 		/>
         <MainSection
+		  p_id={this.context.router.getCurrentParams().id}
           allTimelines={this.state.allTimelines}
         />
         

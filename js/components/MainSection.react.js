@@ -21,12 +21,13 @@ var MainSection = React.createClass({
 
   render: function() {
 
-    var allTimelines = this.props.allTimelines;
+    var projet_id = this.props.p_id;
+	  var allTimelines = this.props.allTimelines;
     var timelines = [];
 
-    for (var d_id in allTimelines) {
-		if(d_id != 0)
-		timelines.push(<TimelineItem date={allTimelines[d_id][0].date} timeline={allTimelines[d_id]} />);
+    for (var date_id in allTimelines) {
+		if(date_id != 0)
+		timelines.push(<TimelineItem p_id={projet_id} d_id={date_id} date={allTimelines[date_id][0].date} timeline={allTimelines[date_id]} />);
     }
 
     return (
